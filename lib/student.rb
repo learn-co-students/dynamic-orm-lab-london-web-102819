@@ -9,7 +9,13 @@ class Student < InteractiveRecord
         self.attr_accessor col_name.to_sym
     end
 
+
 end
+
+def lulu
+    DB[:conn].execute("SELECT * FROM students")[0]
+end
+
 
 binding.pry
 

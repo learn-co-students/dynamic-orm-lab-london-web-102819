@@ -44,18 +44,29 @@ class InteractiveRecord
     end
 
     def save
-        sql = "INSERT INTO #{self.table_name_for_insert} (#{self.col_names_for_insert}) VALUES (#{self.values_for_insert});"
+        sql = "INSERT INTO #{table_name_for_insert} (#{col_names_for_insert}) VALUES (#{values_for_insert})"
         DB[:conn].execute(sql)
-        @id = DB[:conn].execute("SELECT last_insert_rowid() FROM #{self.table_name_for_insert};")[0][0]
-    end
+        @id = DB[:conn].execute("SELECT last_insert_rowid() FROM #{table_name_for_insert}")[0][0]
+      end
 
     def self.find_by_name(name)
-        DB[:conn].execute("SELECT * FROM #{self.table_name} WHERE name = ?;", name)
+        result = DB[:conn].execute("SELECT * FROM #{self.table_name} WHERE name = ?;", name)
+        result[0].delete(0)
+        result[0].delete(1)
+        result[0].delete(2)
+        result
     end
 
     def self.find_by(attributes)
-        DB[:conn].execute("SELECT * FROM #{self.table_name} WHERE name = ?;", name)
+        value = attributes.values.first
+        formatted_value = value.class == Fixnum ? value : "'#{value}'"
+        key = attributes.keys.first
+        result = DB[:conn].execute("SELECT * FROM #{self.table_name} WHERE #{key} = #{formatted_value};")
+        result[0].delete(0)
+        result[0].delete(1)
+        result[0].delete(2)
+        result
     end
-end
+
   
 end
